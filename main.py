@@ -58,8 +58,12 @@ def error(bot, update, error):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, error)
 
+
 def add_cocktail(bot, update):
     # Сюда написать в каком формате добавлять
     update.message.reply_text('Добавьте коктейль в формате: ***')
+    print('')
+
+
 if __name__ == '__main__':
     main()
