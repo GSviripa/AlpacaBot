@@ -5,6 +5,21 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
+bar = []
+tempName = ""
+tempDescription = ""
+tempIngredients = {}
+addCounter = 0
+
+class Cocktail:
+    def __init__(self, name, description, ingredients):
+        self.name = name
+        self.description = description
+        self.ingredients = ingredients
+
+
+def add(name, description, ingredients):
+    bar.append(Cocktail(name, description, ingredients))
 
 def main():
     updater = Updater('441763865:AAEPyAQEUX2JsLxiHn-xX0QvD4rreksBhHY')
@@ -14,6 +29,7 @@ def main():
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
+    dp.add_handler(CommandHandler("add_cocktail", add_cocktail))
 
     # on noncommand i.e message - echo the message on Telegram
     dp.add_handler(MessageHandler(Filters.text, echo))
@@ -40,18 +56,23 @@ def help(bot, update):
 
 
 def echo(bot, update):
-    """Echo the user message."""
-    texttoconvert = update.message.text.upper()
-    dict_symbols = {'Q': 'Й', 'W': 'Ц'}
-    result=''
-    for i in texttoconvert:
-        if i in dict_symbols.keys():
-            result+=dict_symbols.get(i)
-        else:
-            result+=i
-
-
-    update.message.reply_text(result)
+    global addCounter
+    update.message.reply_text(addCounter)
+    if addCounter == 1:
+        update.message.reply_text('Введите описание коктейля')
+        bot.tempName = update.message.text
+    if addCounter == 2:
+        update.message.reply_text('Введите ингредиенты в формате имя:количество через запятую')
+        bot.tempDescription = update.message.text
+    if addCounter == 3:
+        tArray = update.message.text.replace(' ', '').split(',')
+        for a in tArray:
+            bot.tempIngredients[a.split(':')[0]] = a.split(':')[1]
+        addCounter = 0
+        add(bot.tempName, bot.tempDescription, bot.tempIngredients)
+        update.message.reply_text('Ваш коктейль добавлен')
+    if addCounter > 0:
+        addCounter += 1
 
 
 def error(bot, update, error):
@@ -60,9 +81,9 @@ def error(bot, update, error):
 
 
 def add_cocktail(bot, update):
-    # Сюда написать в каком формате добавлять
-    update.message.reply_text('Добавьте коктейль в формате: ***')
-    print('')
+    update.message.reply_text('Для внесения коктейля впишите название')
+    global addCounter
+    addCounter = 1
 
 
 if __name__ == '__main__':
